@@ -25,9 +25,10 @@ class RegistDialog(wx.Dialog):
         self.diqucombo.SetPopupMaxHeight(self.diqucombo.GetCharHeight()*10)
         hbox0.Add(diquText,flag=wx.ALIGN_CENTER)
         hbox0.Add(self.diqucombo,flag=wx.ALIGN_CENTER)
-        danweiText = wx.wx.StaticText(parent=self,label=u'单位:')
+        danweiText = wx.StaticText(parent=self,label=u'单位:')
         danweiText.SetFont(font_sm)
-        self.danweiCtrl = wx.TextCtrl(parent=self,size=(100,25))
+        self.danweiCtrl = wx.combo.OwnerDrawnComboBox(parent=self,id=-1,size=(100,25),choices=UtilData.DANWEI_List,style=wx.CB_READONLY)
+        self.danweiCtrl.SetPopupMaxHeight(self.danweiCtrl.GetCharHeight()*10)
         hbox0.Add(danweiText,flag=wx.ALIGN_CENTER)
         hbox0.Add(self.danweiCtrl,flag=wx.ALIGN_CENTER)
         machineCodeText = wx.StaticText(parent=self,label=u"机器码:")
@@ -89,6 +90,7 @@ class RegistDialog(wx.Dialog):
         if param2 == self.registCtrl.GetValue().strip():
             try:
                 with open(u"./re.py","w") as o:
+                    o.write("# -*- coding:utf-8 -*-"+u"\n")
                     o.write(self.registCtrl.GetValue().strip()+u"\n") 
                     o.write(self.diqucombo.GetValue().strip()+u"\n")
                     o.write(self.danweiCtrl.GetValue().strip())

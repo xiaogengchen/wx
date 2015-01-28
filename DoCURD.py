@@ -149,6 +149,16 @@ def query_password_for_modifyPassword(conn,paramDict={}):
         return
     return cu.fetchall()
 
+#query user from users
+def query_user_for_resetUser(conn,paramDict={}):
+    cu = conn.cursor()
+    try:
+        cu.execute("select username from users where username not like 'admin' ")
+    except sqlite3.Error,e:
+        print 'query username faied:',e.args[0]
+        return
+    return cu.fetchall()
+
 #query fro guihao print
 def query_for_guihao_print(conn,paramDict={}):
     cu = conn.cursor()

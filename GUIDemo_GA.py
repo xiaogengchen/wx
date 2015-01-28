@@ -19,7 +19,7 @@ CONNECTION = DoCURD.connect_db('./tbdata.db')
 class MyFrame(wx.Frame):
     #框架界面初始化,用户各元素外观布局^(wx.MAXIMIZE_BOX|wx.RESIZE_BORDER)
     def __init__(self):
-        wx.Frame.__init__(self,parent=None,title=" World",size=(1024,768),style=wx.DEFAULT_FRAME_STYLE^(wx.MAXIMIZE_BOX|wx.RESIZE_BORDER))
+        wx.Frame.__init__(self,parent=None,title=u"天保档案管理系统   v1.0",size=(1024,768),style=wx.DEFAULT_FRAME_STYLE^(wx.MAXIMIZE_BOX|wx.RESIZE_BORDER))
         #初始化用户名
         self.USERNAME = ''
         #初始化数据库
@@ -185,8 +185,6 @@ class MyFrame(wx.Frame):
         self.anjuantiming_archives_ctrl = wx.TextCtrl(parent=self.add_archives_panel,size=(465,30))
         #生成  单位  下拉选择框
         self.danwei_archives_comboBox = wx.combo.OwnerDrawnComboBox(parent=self.add_archives_panel,id=-1,size=ARCHIVES_SIZE,choices=UtilData.DANWEI_List,style=wx.CB_READONLY)
-        #设置第0个选项为默认值
-        self.danwei_archives_comboBox.SetSelection(n=0)
         #设置下拉列表一次容纳10个元素
         self.danwei_archives_comboBox.SetPopupMaxHeight(self.danwei_archives_comboBox.GetCharHeight()*10)       
         #生成 立卷日期 下拉选择框
@@ -1114,7 +1112,7 @@ class MyFrame(wx.Frame):
         passwordText.SetFont(font_password)
         rePasswordText.SetFont(font_password)
         #生成输入控件
-        self.usernameCtrl = wx.TextCtrl(parent=self.addUser_system_panel,)
+        self.usernameCtrl = wx.TextCtrl(parent=self.addUser_system_panel)
         self.passwordCtrl = wx.TextCtrl(parent=self.addUser_system_panel,style=wx.TE_PASSWORD)
         self.rePasswordCtrl = wx.TextCtrl(parent=self.addUser_system_panel,style=wx.TE_PASSWORD)
         addUserButton = wx.Button(parent=self.addUser_system_panel,label=u"添加用户")
@@ -1168,6 +1166,43 @@ class MyFrame(wx.Frame):
         gridBagSizer_modifyPass.AddGrowableCol(2)
         #将gridBagSizer设置为modify_system_panel的布局管理器
         self.modify_system_panel.SetSizer(gridBagSizer_modifyPass)
+        
+        #重置用户页
+        self.reset_system_panel = wx.Panel(parent=self.system_Notebook)
+        #生成gridBagSizer布局管理器
+        gridBagSizer_reset = wx.GridBagSizer(hgap=15,vgap=15)
+        #生成静态文本（原始密码，新的密码，再次输入）
+        beforePassText_reset = wx.StaticText(parent=self.reset_system_panel,label=u"用  户  名:",style=wx.ALIGN_CENTER)
+        nowPassText_reset = wx.StaticText(parent=self.reset_system_panel,label=u"新的密码:",style=wx.ALIGN_CENTER)
+        rePassText_reset = wx.StaticText(parent=self.reset_system_panel,label=u"再次输入:",style=wx.ALIGN_CENTER)
+        font_pass_reset = wx.Font(pointSize=15,family=wx.ROMAN,style=wx.NORMAL,weight=wx.BOLD)
+        beforePassText_reset.SetFont(font_pass_reset)
+        nowPassText_reset.SetFont(font_pass_reset)
+        rePassText_reset.SetFont(font_pass_reset)
+        #生成输入控件
+        user_list = DoCURD.query_user_for_resetUser(self.CONN)
+        user_list = [i[0] for i in user_list]
+        self.beforPassComb_reset = wx.combo.OwnerDrawnComboBox(parent=self.reset_system_panel,id=-1,size=(112,25),choices=user_list,style=wx.CB_READONLY)
+        self.nowPassCtrl_reset = wx.TextCtrl(parent=self.reset_system_panel,style=wx.TE_PASSWORD)
+        self.rePassCtrl_reset = wx.TextCtrl(parent=self.reset_system_panel,style=wx.TE_PASSWORD)
+        confirmButton = wx.Button(parent=self.reset_system_panel,label=u"确定重置")
+        #对确定修改按钮绑定changePassword方法
+        confirmButton.Bind(wx.EVT_BUTTON, self.resetUser)
+        #将静态文本和输入控件加入布局管理器
+        gridBagSizer_reset.Add(beforePassText_reset,pos=(0,0),span=(1,2),flag=wx.ALIGN_CENTER_VERTICAL|wx.ALIGN_RIGHT|wx.TOP,border=80)
+        gridBagSizer_reset.Add(self.beforPassComb_reset,pos=(0,2),flag=wx.ALIGN_CENTER_VERTICAL|wx.ALIGN_LEFT|wx.TOP,border=80)
+        gridBagSizer_reset.Add(nowPassText_reset,pos=(1,0),span=(1,2),flag=wx.ALIGN_CENTER_VERTICAL|wx.ALIGN_RIGHT)
+        gridBagSizer_reset.Add(self.nowPassCtrl_reset,pos=(1,2),flag=wx.ALIGN_CENTER_VERTICAL|wx.ALIGN_LEFT)
+        gridBagSizer_reset.Add(rePassText_reset,pos=(2,0),span=(1,2),flag=wx.ALIGN_CENTER_VERTICAL|wx.ALIGN_RIGHT)
+        gridBagSizer_reset.Add(self.rePassCtrl_reset,pos=(2,2),flag=wx.ALIGN_CENTER_VERTICAL|wx.ALIGN_LEFT)
+        gridBagSizer_reset.Add(confirmButton,pos=(3,0),span=(1,4),flag=wx.ALIGN_CENTER)
+        #第0列可扩展(让该列尽可能占取水平方向上最大的空间)
+        gridBagSizer_reset.AddGrowableCol(0)
+        #第2列可扩展(让该列尽可能占取水平方向上最大的空间)
+        gridBagSizer_reset.AddGrowableCol(2)
+        #将gridBagSizer设置为modify_system_panel的布局管理器
+        self.reset_system_panel.SetSizer(gridBagSizer_reset)        
+        
         #数据备份、恢复页
         self.outputAndImport_system_panel = wx.Panel(parent=self.system_Notebook)
         outputAndImport_VBox = wx.BoxSizer(wx.VERTICAL)
@@ -1186,6 +1221,8 @@ class MyFrame(wx.Frame):
         #向系统管理框架中添加修改密码页、退出页
         self.system_Notebook.AddPage(self.addUser_system_panel,u"添加用户")
         self.system_Notebook.AddPage(self.modify_system_panel,u"修改密码")
+        #if "admin" == self.USERNAME :
+        self.system_Notebook.AddPage(self.reset_system_panel,u"重置用户")
         self.system_Notebook.AddPage(self.outputAndImport_system_panel,u"数据备份、数据恢复")
         #向主框架中添加系统页
         self.main_Notebook.AddPage(self.system_panel,u"系统")
@@ -1200,6 +1237,8 @@ class MyFrame(wx.Frame):
         self.Show()
     
 #$$$$$$$$$$被绑定的事件区结束$$$$$$$$$$ 
+    def resetUser(self,event):
+        pass
     def printByGuiHao(self,event):
         quhao = self.quhao_print_comboBox.GetValue().strip()
         guihao = self.guihao_print_comboBox.GetValue().strip()
@@ -1613,9 +1652,12 @@ class MyFrame(wx.Frame):
             self.USERNAME = self.usernameText_welcome.Value.strip()
             self.inputter_archives_ctrl.SetValue(self.USERNAME)
             self.inputter_files_ctrl.SetValue(self.USERNAME)
-            self.Title = u"天保档案管理系统"+u"                                                                                   当前用户: " + self.USERNAME
+            self.Title = u"天保档案管理系统  v1.0"+u"                                                                                                   当前用户: " + self.USERNAME
             #删除登陆页
             self.main_Notebook.DeletePage(0)
+            if 'admin'!=self.USERNAME:
+                self.system_Notebook.DeletePage(0)
+                self.system_Notebook.DeletePage(1)
         else:
             errorMessage = wx.MessageDialog(parent=None,message=u"用户名或密码错误,请核实后重新登陆",caption=u"登陆异常信息",style=wx.ICON_ERROR)
             result = errorMessage.ShowModal()
@@ -2529,6 +2571,7 @@ class MyApp(wx.App):
             Regist.RegistPanel(self.frame)
         else:
             with open(u'./re.py') as r :
+                r.readline().strip()
                 sc = r.readline().strip()
                 r.readline().strip()
                 d_w = r.readline().strip()
@@ -2537,6 +2580,18 @@ class MyApp(wx.App):
             if sc != sc_param:
                 #序列号验证
                 Regist.RegistPanel(self.frame)
+        
+        if os.path.exists(u'./re.py') :
+            with open(u'./re.py') as r :
+                r.readline().strip()
+                r.readline().strip()
+                r.readline().strip()
+                dw_value = r.readline().strip()
+                n = UtilData.DANWEI_List.index(dw_value)
+                self.frame.danwei_archives_comboBox.SetSelection(n)
+        else:
+            #设置第0个选项为默认值
+            self.danwei_archives_comboBox.SetSelection(n=0)        
         #未登录则冻结所有页面
         for i in range(1,int(self.frame.main_Notebook.GetPageCount())):
             self.frame.main_Notebook.GetPage(i).Freeze()   
