@@ -1,6 +1,7 @@
 # -*- coding:utf-8 -*-
 
 import os
+import pickle
 import shutil
 import wx
 import wx.combo
@@ -14,6 +15,7 @@ import datetime
 import outputPrint
 import Regist
 import ShowFiles
+from win32com.shell import shell, shellcon
 
 
 CONNECTION = DoCURD.connect_db('./tbdata.db')    
@@ -1262,7 +1264,55 @@ class MyFrame(wx.Frame):
     
 #$$$$$$$$$$被绑定的事件区结束$$$$$$$$$$ 
     def shangbao(self,event):
-        
+        ilist = shell.SHGetSpecialFolderLocation(0, shellcon.CSIDL_DESKTOP)
+        deskpath = shell.SHGetPathFromIDList(ilist) 
+        dw = u''
+        if os.path.exists(u'./re.py') :
+            with open(u'./re.py') as r :
+                r.readline().strip()
+                r.readline().strip()
+                r.readline().strip()
+                dw = r.readline().strip()
+        targetpath = unicode(deskpath)+u"\\"+dw[3:]+u".pdata"
+        #准备生成value为空的字典
+        paramDict = {}
+        paramDict = {"table_name":"archives"}
+        paramDict['quhao'] = u''
+        paramDict['guihao'] = u''
+        paramDict['hehao'] = u''
+        paramDict['juanhao'] = u''
+        paramDict['anjuantiming'] = u''
+        paramDict['menlei'] = u''
+        paramDict['guidang'] = u'' 
+        paramDict['qixian'] = u'' 
+        paramDict['danwei'] = u'' 
+        paramDict['lijuanriqi'] = u'' 
+        paramDict['inputter'] = u'' 
+        paramDict['hujianhao'] = u'' 
+        paramDict['weizhi'] =u'' 
+        paramDict['kemu'] = u'' 
+        paramDict['miji'] = u'' 
+        #获取所有档案列表
+        archivesList = DoCURD.query_some_values_from_archivetable(self.CONN,paramDict)
+        #准备生成value为空的字典
+        paramDict = {"table_name":"files"}
+        paramDict['wenjiantimu'] = u""
+        paramDict['wenjianbianhao'] = u""
+        paramDict['fawendanwei'] = u""
+        paramDict['xingchengriqi'] = u"" 
+        paramDict['miji'] = u""
+        paramDict['weizhi'] = u""
+        paramDict['beizhu'] = u"" 
+        #获取所有文件列表
+        filesList = DoCURD.query_some_values_from_filestable_noArchiveID(self.CONN,paramDict)
+        #创建目标列表,并将档案列表和文件列表都加入其中
+        targetList = []
+        targetList.append(archivesList)
+        targetList.append(filesList)
+        #将目标列表的内容写入到桌面文件中
+        with open(targetpath,'wb') as mysavedata:
+            pickle.dump(targetList, mysavedata)
+            wx.MessageBox(u"上报数据已在桌面生成完毕！",u"提示")
         pass
     def showFiles(self,event):
         active_row_number = self.select_grid_archives.GetGridCursorRow()
@@ -1281,7 +1331,7 @@ class MyFrame(wx.Frame):
     def resetUser(self,event):
         state = DoCURD.update_password(self.CONN,{'password':self.nowPassCtrl_reset.Value.strip(),'username':self.beforPassComb_reset.GetValue()})
         if 'ok' == state :
-            wx.MessageBox(u"用户 "+self.beforPassComb_reset.GetValue()+" 密码重置成功！")
+            wx.MessageBox(u"用户 "+self.beforPassComb_reset.GetValue()+" 密码重置成功！",u'提示')
         pass
     def printByGuiHao(self,event):
         quhao = self.quhao_print_comboBox.GetValue().strip()
@@ -2631,8 +2681,8 @@ class MyApp(wx.App):
                 r.readline().strip()
                 r.readline().strip()
                 r.readline().strip()
-                dw_value = r.readline().strip()
-                n = UtilData.DANWEI_List.index(dw_value)
+                self.dw_value = r.readline().strip()
+                n = UtilData.DANWEI_List.index(self.dw_value)
                 self.frame.danwei_archives_comboBox.SetSelection(n)
         else:
             #设置第0个选项为默认值
