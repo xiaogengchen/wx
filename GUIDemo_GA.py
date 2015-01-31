@@ -1319,7 +1319,8 @@ class MyFrame(wx.Frame):
         #获得指定单元格的值GetCellValue(row,col)
         ShowFiles.CONN = self.CONN
         ShowFiles.ARCHVIEID = self.select_grid_archives.GetCellValue(active_row_number,0)
-        ShowFiles.ShowFilesPanel(self)
+        if u''!=ShowFiles.ARCHVIEID:
+            ShowFiles.ShowFilesPanel(self)
 
     def showAnjuantiming(self,event):
         quhao = self.quhao_files_comboBox.GetValue()
