@@ -13,6 +13,7 @@ import DialogDemo_File
 import datetime
 import outputPrint
 import Regist
+import ShowFiles
 
 
 CONNECTION = DoCURD.connect_db('./tbdata.db')    
@@ -378,10 +379,12 @@ class MyFrame(wx.Frame):
         #self.archiveIDText_select_archives_Ctrl = wx.TextCtrl(parent=self.select_archives_panel,size=(122,25))        
         #查询按钮
         select_archives_button = wx.Button(parent=self.select_archives_panel,label=u"查询",size=(75,28))
+        select_archives_showFiles_button = wx.Button(parent=self.select_archives_panel,label=u"查看",size=(75,28))
         #对查询按钮进行事件绑定
         select_archives_button.Bind(wx.EVT_BUTTON, self.selectArchivesBySomeConditions)
+        select_archives_showFiles_button.Bind(wx.EVT_BUTTON, self.showFiles)
         #向顶部横向布局管理器中添加元素
-        select_archives_hbox.Add(select_archives_quhaoText,flag=wx.ALIGN_CENTER_VERTICAL|wx.LEFT,border=55)
+        select_archives_hbox.Add(select_archives_quhaoText,flag=wx.ALIGN_CENTER_VERTICAL|wx.LEFT,border=15)
         select_archives_hbox.Add(self.quhao_select_archives_comboBox,flag=wx.ALIGN_CENTER_VERTICAL|wx.LEFT,border=5)
         select_archives_hbox.Add(select_archives_guihaoText,flag=wx.ALIGN_CENTER_VERTICAL|wx.LEFT,border=10)
         select_archives_hbox.Add(self.guihao_select_archives_comboBox,flag=wx.ALIGN_CENTER_VERTICAL|wx.LEFT,border=5)
@@ -400,7 +403,7 @@ class MyFrame(wx.Frame):
         select_archives_hbox.Add(select_archives_mijiText,flag=wx.ALIGN_CENTER_VERTICAL|wx.LEFT,border=10)
         select_archives_hbox.Add(self.mijiText_select_archives_comboBox,flag=wx.ALIGN_CENTER_VERTICAL|wx.LEFT,border=5)        
         
-        select_archives_hbox2.Add(select_archives_menleiText,flag=wx.ALIGN_CENTER_VERTICAL|wx.LEFT,border=55)
+        select_archives_hbox2.Add(select_archives_menleiText,flag=wx.ALIGN_CENTER_VERTICAL|wx.LEFT,border=15)
         select_archives_hbox2.Add(self.menleiText_select_archives_comboBox,flag=wx.ALIGN_CENTER_VERTICAL|wx.LEFT,border=5)
         select_archives_hbox2.Add(select_archives_guidangText,flag=wx.ALIGN_CENTER_VERTICAL|wx.LEFT,border=10)
         select_archives_hbox2.Add(self.guidangText_select_archives_comboBox,flag=wx.ALIGN_CENTER_VERTICAL|wx.LEFT,border=5)
@@ -416,6 +419,7 @@ class MyFrame(wx.Frame):
         select_archives_hbox2.Add(self.weizhiText_select_archives_comboBox,flag=wx.ALIGN_CENTER_VERTICAL|wx.LEFT,border=5)        
         
         select_archives_hbox2.Add(select_archives_button,flag=wx.ALIGN_CENTER_VERTICAL|wx.LEFT,border=10)
+        select_archives_hbox2.Add(select_archives_showFiles_button,flag=wx.ALIGN_CENTER_VERTICAL|wx.LEFT,border=10)
         #向纵向布局管理器中添加横向布局管理器
         select_archives_vbox.Add(select_archives_hbox)
         select_archives_vbox.Add(select_archives_hbox2)
@@ -526,11 +530,12 @@ class MyFrame(wx.Frame):
         self.add_files_panel = wx.Panel(parent=self.fileManage_Notebook)
         #生成GridBagSizer布局管理器
         add_files_gridBagSizer = wx.GridBagSizer(vgap=30,hgap=10)
+        add_files_hboxsizer = wx.BoxSizer(wx.HORIZONTAL)
         #生成文本标签
         add_files_quhaoText = wx.StaticText(parent=self.add_files_panel,label=u"区        号:",style=wx.ALIGN_CENTER_VERTICAL)
         add_files_guihaoText = wx.StaticText(parent=self.add_files_panel,label=u"柜        号:",style=wx.ALIGN_CENTER_VERTICAL)
         add_files_hehaoText = wx.StaticText(parent=self.add_files_panel,label=u"盒        号:",style=wx.ALIGN_CENTER_VERTICAL)
-        add_files_juanhaoText = wx.StaticText(parent=self.add_files_panel,label=u"卷        号:",style=wx.ALIGN_CENTER_VERTICAL)         
+        add_files_juanhaoText = wx.StaticText(parent=self.add_files_panel,label=u"卷        号:",style=wx.ALIGN_CENTER_VERTICAL)  
         add_files_wenjiantimuText = wx.StaticText(parent=self.add_files_panel,label=u"文件题目:",style=wx.ALIGN_CENTER_VERTICAL)
         add_files_wenjianbianhaoText = wx.StaticText(parent=self.add_files_panel,label=u"文件编号:",style=wx.ALIGN_CENTER_VERTICAL)
         add_files_fawendanweiText = wx.StaticText(parent=self.add_files_panel,label=u"发文单位:",style=wx.ALIGN_CENTER_VERTICAL)
@@ -569,21 +574,21 @@ class MyFrame(wx.Frame):
         add_files_gridBagSizer.Add(add_files_beizhuText,pos=(4,2),flag=wx.ALIGN_CENTER_VERTICAL|wx.ALIGN_RIGHT)
         add_files_gridBagSizer.Add(add_files_inputterText,pos=(5,2),flag=wx.ALIGN_CENTER_VERTICAL|wx.ALIGN_RIGHT) 
         #生成  区号  下拉选择框
-        self.quhao_files_comboBox = wx.combo.OwnerDrawnComboBox(parent=self.add_files_panel,id=-1,size=ARCHIVES_SIZE,choices=UtilData.QUHAO_List,style=wx.CB_READONLY)
+        self.quhao_files_comboBox = wx.combo.OwnerDrawnComboBox(parent=self.add_files_panel,id=-1,size=(100,30),choices=UtilData.QUHAO_List,style=wx.CB_READONLY)
         #设置第0个选项为默认值
         self.quhao_files_comboBox.SetSelection(n=0)
         #设置下拉列表一次容纳10个元素
         self.quhao_files_comboBox.SetPopupMaxHeight(self.quhao_files_comboBox.GetCharHeight()*10)
         self.quhao_files_comboBox.Bind(wx.EVT_COMBOBOX, self.createjuanhaoByDanwei)
         #生成  柜号  下拉选择框
-        self.guihao_files_comboBox = wx.combo.OwnerDrawnComboBox(parent=self.add_files_panel,id=-1,size=ARCHIVES_SIZE,choices=UtilData.GUIHAO_List,style=wx.CB_READONLY)
+        self.guihao_files_comboBox = wx.combo.OwnerDrawnComboBox(parent=self.add_files_panel,id=-1,size=(100,30),choices=UtilData.GUIHAO_List,style=wx.CB_READONLY)
         #设置第0个选项为默认值
         self.guihao_files_comboBox.SetSelection(n=0)
         #设置下拉列表一次容纳10个元素
         self.guihao_files_comboBox.SetPopupMaxHeight(self.guihao_files_comboBox.GetCharHeight()*10)
         self.guihao_files_comboBox.Bind(wx.EVT_COMBOBOX, self.createjuanhaoByDanwei)
         #生成  盒号 下拉选择框
-        self.hehao_files_comboBox = wx.combo.OwnerDrawnComboBox(parent=self.add_files_panel,id=-1,size=ARCHIVES_SIZE,choices=UtilData.HEHAO_List,style=wx.CB_READONLY)
+        self.hehao_files_comboBox = wx.combo.OwnerDrawnComboBox(parent=self.add_files_panel,id=-1,size=(100,30),choices=UtilData.HEHAO_List,style=wx.CB_READONLY)
         #设置第0个选项为默认值
         self.hehao_files_comboBox.SetSelection(n=0)
         #设置下拉列表一次容纳10个元素
@@ -595,14 +600,19 @@ class MyFrame(wx.Frame):
         for row in temp_list:
             self.temp_juanhao_list.append(row[0])
         self.temp_juanhao_list.sort()        
-        self.juanhao_files_comboBox = wx.combo.OwnerDrawnComboBox(parent=self.add_files_panel,id=-1,size=ARCHIVES_SIZE,choices=self.temp_juanhao_list,style=wx.CB_READONLY)
+        self.juanhao_files_comboBox = wx.combo.OwnerDrawnComboBox(parent=self.add_files_panel,id=-1,size=(100,30),choices=self.temp_juanhao_list,style=wx.CB_READONLY)
         #设置第0个选项为默认值
         if len(self.temp_juanhao_list) != 0 :
             self.juanhao_files_comboBox.SetSelection(n=0)
         #设置下拉列表一次容纳10个元素
         self.juanhao_files_comboBox.SetPopupMaxHeight(self.juanhao_files_comboBox.GetCharHeight()*10)
-        
-        
+        #选择卷号后自动显示案卷题名
+        self.add_files_anjuantimingText = wx.StaticText(parent=self.add_files_panel,label=u'',style=wx.ALIGN_LEFT|wx.ALIGN_CENTER_VERTICAL)
+        self.showAnjuantiming('')
+        add_files_hboxsizer.Add(self.juanhao_files_comboBox)
+        add_files_hboxsizer.Add(self.add_files_anjuantimingText,flag=wx.ALIGN_CENTER_VERTICAL)
+        #将下拉卷号绑定事件，显示案卷题名
+        self.juanhao_files_comboBox.Bind(wx.EVT_COMBOBOX, self.showAnjuantiming)
         #生成 文件编号 输入框
         self.wenjianbianhao_files_ctrl = wx.TextCtrl(parent=self.add_files_panel,size=(450,30))
         #生成 文件题目 输入框
@@ -646,7 +656,7 @@ class MyFrame(wx.Frame):
         add_files_gridBagSizer.Add(self.quhao_files_comboBox,pos=(0,1),flag=wx.ALIGN_LEFT|wx.TOP,border=15)
         add_files_gridBagSizer.Add(self.guihao_files_comboBox,pos=(1,1),flag=wx.ALIGN_LEFT)
         add_files_gridBagSizer.Add(self.hehao_files_comboBox,pos=(2,1),flag=wx.ALIGN_LEFT)
-        add_files_gridBagSizer.Add(self.juanhao_files_comboBox,pos=(3,1),flag=wx.ALIGN_LEFT)
+        add_files_gridBagSizer.Add(add_files_hboxsizer,pos=(3,1),flag=wx.ALIGN_LEFT)
         add_files_gridBagSizer.Add(self.wenjianbianhao_files_ctrl,pos=(4,1),flag=wx.ALIGN_LEFT)
         add_files_gridBagSizer.Add(self.wenjiantimu_files_ctrl,pos=(5,1),flag=wx.ALIGN_LEFT) 
         #此处放置 内容 pos=(6,1)
@@ -1218,12 +1228,26 @@ class MyFrame(wx.Frame):
         #给按钮加入事件
         outputButton.Bind(wx.EVT_BUTTON, self.outputData)
         importButton.Bind(wx.EVT_BUTTON, self.importData)
+        
+        #数据上报页
+        self.shangbao_system_panel = wx.Panel(parent=self.system_Notebook)
+        shangbao_VBox = wx.BoxSizer(wx.VERTICAL)
+        shangbaoButton = wx.Button(parent=self.shangbao_system_panel,label=u"数据上报",size=(120,50))
+        #设置按钮字体
+        font_button = wx.Font(pointSize=18,family=wx.ROMAN,style=wx.NORMAL,weight=wx.BOLD)
+        shangbaoButton.SetFont(font_button)
+        shangbao_VBox.Add(shangbaoButton,flag=wx.ALIGN_CENTER|wx.TOP,border=150)
+        self.shangbao_system_panel.SetSizer(shangbao_VBox)          
+        #给按钮加入事件
+        shangbaoButton.Bind(wx.EVT_BUTTON, self.shangbao)        
+       
         #向系统管理框架中添加修改密码页、退出页
         self.system_Notebook.AddPage(self.addUser_system_panel,u"添加用户")
         self.system_Notebook.AddPage(self.modify_system_panel,u"修改密码")
         #if "admin" == self.USERNAME :
         self.system_Notebook.AddPage(self.reset_system_panel,u"重置用户")
         self.system_Notebook.AddPage(self.outputAndImport_system_panel,u"数据备份、数据恢复")
+        self.system_Notebook.AddPage(self.shangbao_system_panel,u'数据上报')
         #向主框架中添加系统页
         self.main_Notebook.AddPage(self.system_panel,u"系统")
         #**********系统页结束**********
@@ -1237,7 +1261,27 @@ class MyFrame(wx.Frame):
         self.Show()
     
 #$$$$$$$$$$被绑定的事件区结束$$$$$$$$$$ 
+    def shangbao(self,event):
+        
+        pass
+    def showFiles(self,event):
+        active_row_number = self.select_grid_archives.GetGridCursorRow()
+        #获得指定单元格的值GetCellValue(row,col)
+        ShowFiles.CONN = self.CONN
+        ShowFiles.ARCHVIEID = self.select_grid_archives.GetCellValue(active_row_number,0)
+        ShowFiles.ShowFilesPanel(self)
+
+    def showAnjuantiming(self,event):
+        quhao = self.quhao_files_comboBox.GetValue()
+        guihao = self.guihao_files_comboBox.GetValue()
+        hehao = self.hehao_files_comboBox.GetValue()
+        juanhao = self.juanhao_files_comboBox.GetValue()
+        tempList = DoCURD.query_anjuantiming_for_fileadd(self.CONN,{'quhao':quhao,'guihao':guihao,'hehao':hehao,'juanhao':juanhao})
+        self.add_files_anjuantimingText.SetLabel(tempList[0][0])
     def resetUser(self,event):
+        state = DoCURD.update_password(self.CONN,{'password':self.nowPassCtrl_reset.Value.strip(),'username':self.beforPassComb_reset.GetValue()})
+        if 'ok' == state :
+            wx.MessageBox(u"用户 "+self.beforPassComb_reset.GetValue()+" 密码重置成功！")
         pass
     def printByGuiHao(self,event):
         quhao = self.quhao_print_comboBox.GetValue().strip()
@@ -1652,7 +1696,7 @@ class MyFrame(wx.Frame):
             self.USERNAME = self.usernameText_welcome.Value.strip()
             self.inputter_archives_ctrl.SetValue(self.USERNAME)
             self.inputter_files_ctrl.SetValue(self.USERNAME)
-            self.Title = u"天保档案管理系统  v1.0"+u"                                                                                                   当前用户: " + self.USERNAME
+            self.Title = u"天保档案管理系统  v1.0"+u"  [当前用户: " + self.USERNAME + u']'
             #删除登陆页
             self.main_Notebook.DeletePage(0)
             if 'admin'!=self.USERNAME:
@@ -2226,7 +2270,7 @@ class MyFrame(wx.Frame):
         #需要添加的行数如果为正值证明记录数少于20,少几行补几行,再删除上次表中多余行数(即上次表行数减20后的数)
         if needAddRows_file > 0 :
             for i in range(needAddRows_file) :
-                self.select_data_file_table.dataList_File.append(['','','','','','','','','',''])
+                self.select_data_file_table.dataList_File.append(['','','','','','','','','','',''])
             #如果查询到的数据不足一屏则将原有表格容器多余的行数删除(删除的个数为self.select_data_table.GetRowsCount()-默认的20个)
             self.select_data_file_table.DeleteRows(numRows=(int(self.last_data_select_file_table_rows)-20))
             #更新上一次表格行数
@@ -2254,13 +2298,13 @@ class MyFrame(wx.Frame):
     def selectManageFilesBySomeConditions(self,evnet):
         paramDict = {"table_name":"files"}
         paramDict['archiveID'] = unicode(self.archiveID_manage_files_comboBox.GetValue())
-        paramDict['wenjiantimu'] = unicode(self.wenjiantimu_manage_files_Ctrl.Value)
-        paramDict['wenjianbianhao'] = unicode(self.wenjianbianhao_manage_files_ctrl.Value)
+        paramDict['wenjiantimu'] = unicode(self.wenjiantimu_manage_files_Ctrl.GetValue())
+        paramDict['wenjianbianhao'] = unicode(self.wenjianbianhao_manage_files_ctrl.GetValue())
         #查询数据库中给定条件的档案,结果替换原有数据源
         if paramDict['archiveID']!="" :
-            self.manage_data_file_table.dataList_File = DoCURD.query_some_values_from_filestable(self.CONN,paramDict=paramDict)
+            self.manage_data_file_table.dataList_File = DoCURD.query_some_values_from_filestable2(self.CONN,paramDict=paramDict)
         else:
-            self.manage_data_file_table.dataList_File = DoCURD.query_some_values_from_filestable_noArchiveID(self.CONN,paramDict=paramDict)
+            self.manage_data_file_table.dataList_File = DoCURD.query_some_values_from_filestable_noArchiveID2(self.CONN,paramDict=paramDict)
         #临时存放现有表格行数
         temp_num_file = len(self.manage_data_file_table.dataList_File)
         needAddRows_file = 20 - temp_num_file
@@ -2268,7 +2312,7 @@ class MyFrame(wx.Frame):
         #需要添加的行数如果为正值证明记录数少于20,少几行补几行,再删除上次表中多余行数(即上次表行数减20后的数)
         if needAddRows_file > 0 :
             for i in range(needAddRows_file) :
-                self.manage_data_file_table.dataList_File.append(['','','','','','','','','',''])
+                self.manage_data_file_table.dataList_File.append(['','','','','','','','','','',''])
             #如果查询到的数据不足一屏则将原有表格容器多余的行数删除(删除的个数为self.select_data_table.GetRowsCount()-默认的20个)
             self.manage_data_file_table.DeleteRows(numRows=(int(self.last_data_manage_file_table_rows)-20))
             #更新上一次表格行数
@@ -2485,10 +2529,10 @@ class myFileTable(wx.grid.PyGridTableBase):
         needAddRows_File = 20 - len(self.dataList_File)
         if needAddRows_File > 0 :
             for i in range(needAddRows_File) :
-                self.dataList_File.append(['','','','','','','','','',''])
+                self.dataList_File.append(['','','','','','','','','','',''])
             
         #列标签
-        self.colLabels_File = [u"文  件  ID",u"档  案  ID",u'        文      件      题      目        ',u'    文      件      编      号    ',u'  发  文  单  位  ',
+        self.colLabels_File = [u"文  件  ID",u"档  案  ID",u'案    卷    题    名',u'        文      件      题      目        ',u'    文      件      编      号    ',u'  发  文  单  位  ',
                           u'    形   成   日   期    ',u'页    数',u'密    级',u'备    注',u'录  入  人']     
 
     # these five are the required methods
@@ -2543,6 +2587,7 @@ class myFileTable(wx.grid.PyGridTableBase):
         gridView.ProcessTableMessage(getValueMsg)
            
         return True   
+    
 def initTables(self):
     #生成档案表
     DoCURD.create_archives_table(CONNECTION,paramDict={"table_name":"archives"})

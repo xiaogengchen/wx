@@ -137,6 +137,18 @@ def query_archiveID_for_destory(conn,paramDict={}):
         return
     return cu.fetchall()
 
+#query anjuantiming from archives for file add
+def query_anjuantiming_for_fileadd(conn,paramDict={}):
+    cu = conn.cursor()
+    try:
+        cu.execute("select anjuantiming from archives where quhao like '%s' and guihao like '%s' and hehao like '%s' and juanhao like '%s'  " % 
+                   (paramDict.get("quhao"),paramDict.get("guihao"),paramDict.get("hehao"),paramDict.get("juanhao")))
+
+    except sqlite3.Error,e:
+        print 'query anjuantiming  for file add faied:',e.args[0]
+        return
+    return cu.fetchall()
+
 #query password from users
 def query_password_for_modifyPassword(conn,paramDict={}):
     cu = conn.cursor()
@@ -339,6 +351,7 @@ def query_some_values_from_filestable(conn,paramDict={}):
     try:
         cu.execute("select fileID,         \
                            archiveID,      \
+                             (select anjuantiming from archives where files.archiveID=archives.archiveID),  \
                            wenjiantimu,    \
                            wenjianbianhao, \
                            fawendanwei,    \
@@ -372,6 +385,7 @@ def query_some_values_from_filestable_noArchiveID(conn,paramDict={}):
     try:
         cu.execute("select fileID,         \
                            archiveID,      \
+                            (select anjuantiming from archives where files.archiveID=archives.archiveID),  \
                            wenjiantimu,    \
                            wenjianbianhao, \
                            fawendanwei,    \
@@ -379,7 +393,7 @@ def query_some_values_from_filestable_noArchiveID(conn,paramDict={}):
                            yeshu,          \
                            miji,           \
                            beizhu,         \
-                           inputter        \
+                           inputter       \
                     from %s where wenjianbianhao like '%%%s%%' and wenjiantimu like '%%%s%%' and fawendanwei like '%%%s%%' \
                     and xingchengriqi like '%%%s%%' and miji like '%%%s%%' and beizhu like '%%%s%%' and \
                     archiveID in (select distinct archiveID from archives where weizhi like '%%%s%%' ) " % 
@@ -397,6 +411,60 @@ def query_some_values_from_filestable_noArchiveID(conn,paramDict={}):
         print 'query some data from files no archiveID failed:',e.args[0]
         return
     return cu.fetchall()
+
+#query some values from files table 
+def query_some_values_from_filestable2(conn,paramDict={}):
+    cu = conn.cursor()
+    try:
+        cu.execute("select fileID,         \
+                           archiveID,      \
+                            (select anjuantiming from archives where files.archiveID=archives.archiveID),  \
+                           wenjiantimu,    \
+                           wenjianbianhao, \
+                           fawendanwei,    \
+                           xingchengriqi,  \
+                           yeshu,          \
+                           miji,           \
+                           beizhu,         \
+                           inputter        \
+                    from %s where archiveID=%s and wenjianbianhao like '%%%s%%' and wenjiantimu like '%%%s%%'  " % 
+                    (paramDict.get('table_name'),
+                     paramDict.get('archiveID'),
+                     paramDict.get('wenjianbianhao'),
+                     paramDict.get('wenjiantimu')
+                     )
+                   )
+    except sqlite3.Error,e:
+        print 'query some data from files failed:',e.args[0]
+        return
+    return cu.fetchall()
+
+#query some values from files table no archivID
+def query_some_values_from_filestable_noArchiveID2(conn,paramDict={}):
+    cu = conn.cursor()
+    try:
+        cu.execute("select fileID,         \
+                           archiveID,      \
+                            (select anjuantiming from archives where files.archiveID=archives.archiveID),  \
+                           wenjiantimu,    \
+                           wenjianbianhao, \
+                           fawendanwei,    \
+                           xingchengriqi,  \
+                           yeshu,          \
+                           miji,           \
+                           beizhu,         \
+                           inputter        \
+                    from %s where wenjianbianhao like '%%%s%%' and wenjiantimu like '%%%s%%' " % 
+                    (paramDict.get('table_name'),
+                     paramDict.get('wenjianbianhao'),
+                     paramDict.get('wenjiantimu')
+                     )
+                   )
+    except sqlite3.Error,e:
+        print 'query some data from files no archiveID failed:',e.args[0]
+        return
+    return cu.fetchall()
+
 
 #update some values from archives table 
 def update_some_values_from_archivetable(conn,paramDict={}):
