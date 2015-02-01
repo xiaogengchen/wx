@@ -1273,7 +1273,7 @@ class MyFrame(wx.Frame):
                 r.readline().strip()
                 r.readline().strip()
                 dw = r.readline().strip()
-        targetpath = unicode(deskpath)+u"\\"+dw[3:]+u".pdata"
+        targetpath = unicode(deskpath)+u"\\"+dw[3:]+unicode(datetime.datetime.now().strftime('%Y%m%d'))+u".tbdata"
         #准备生成value为空的字典
         paramDict = {}
         paramDict = {"table_name":"archives"}
