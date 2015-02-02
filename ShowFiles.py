@@ -5,6 +5,7 @@ import DoCURD
 
 CONN  = u''
 ARCHVIEID = u''
+
 class myArchiveShowFilesTable(wx.grid.PyGridTableBase):
     def __init__(self):
         wx.grid.PyGridTableBase.__init__(self)
