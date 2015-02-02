@@ -1275,8 +1275,6 @@ class MyFrame(wx.Frame):
                 dw = r.readline().strip()
         targetpath = unicode(deskpath)+u"\\"+dw[3:]+u"_"+unicode(datetime.datetime.now().strftime('%Y%m%d'))+u".db"
         try:
-            print os.getcwd()+u"\\tbdata.db"
-            print targetpath
             shutil.copyfile(os.getcwd()+u"\\tbdata.db", targetpath)
             wx.MessageBox(u"上报数据已在桌面生成完毕！",u"提示")
         except Exception,e:
