@@ -1294,7 +1294,8 @@ class MyFrame(wx.Frame):
         hehao = self.hehao_files_comboBox.GetValue()
         juanhao = self.juanhao_files_comboBox.GetValue()
         tempList = DoCURD.query_anjuantiming_for_fileadd(self.CONN,{'quhao':quhao,'guihao':guihao,'hehao':hehao,'juanhao':juanhao})
-        self.add_files_anjuantimingText.SetLabel(tempList[0][0])
+        if tempList!=[]:
+            self.add_files_anjuantimingText.SetLabel(tempList[0][0])
     def resetUser(self,event):
         state = DoCURD.update_password(self.CONN,{'password':self.nowPassCtrl_reset.Value.strip(),'username':self.beforPassComb_reset.GetValue()})
         if 'ok' == state :

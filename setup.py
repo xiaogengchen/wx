@@ -9,4 +9,5 @@ setup(
 		}
 	},
 	windows = [{"script":"d:/wx/GUIDemo_GA.py"}]
+	#windows = [{"script":"d:/wx/TBCenter.py"}]
 )
