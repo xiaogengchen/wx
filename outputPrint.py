@@ -9,13 +9,14 @@ import re
 from win32com.client import DispatchEx,constants
 
 
-CESHI = 0 #(测试为1,正常为0)
+CESHI = 1 #(测试为1,正常为0)
 
 def DD():
     DIQU = u''
     DANWEI = u''    
     if os.path.exists(r"./re.py") :
         with open(r"./re.py") as o:
+            o.readline()
             o.readline()
             DIQU = o.readline().strip()
             DANWEI = o.readline().strip()
@@ -26,18 +27,19 @@ def doGuiAnJuanMuLuPrint(self,printList = [('test','test','test','test','test','
     DIQU,DANWEI = DD()
     msword = DispatchEx('Word.Application')
     msword.Visible = CESHI
-    msword.DisplayAlerts = CESHI
-    doc = msword.Documents.Add()   
+    #msword.DisplayAlerts = CESHI
+    doc = msword.Documents.Add()  
     pre_section = doc.Sections(1)
-    new_seciton = doc.Range(pre_section.Range.End, pre_section.Range.End).Sections.Add()
+    new_seciton = doc.Range(pre_section.Range.End-1, pre_section.Range.End-1).Sections.Add()
     new_range = new_seciton.Range
     if guiOrHe == u'gui':
-        new_range.Text = unicode(DANWEI)+u"天保工程档案柜层案卷目录"
+        new_range.Text = unicode(DANWEI[3:])+u"天保工程档案柜层案卷目录"
     else:
-        new_range.Text = unicode(DANWEI)+u"天保工程档案盒案卷目录"
+        new_range.Text = unicode(DANWEI[3:])+u"天保工程档案盒案卷目录"
     new_range.Font.Size = 15
     new_range.ParagraphFormat.Alignment = 1
-    new_table = new_range.Tables.Add(doc.Range(new_range.End,new_range.End), len(printList)+1, 8)
+    new_table = new_range.Tables.Add(doc.Range(new_range.End-1,new_range.End-1), len(printList)+1, 8)
+    #new_table = new_range.Tables.Add(doc.Range(0,0), len(printList)+1, 8)
     new_table.Cell(1,1).Range.Text = u"序号"
     new_table.Cell(1,2).Range.Text = u"档号"
     new_table.Cell(1,3).Range.Text = u"索引号"
@@ -46,6 +48,10 @@ def doGuiAnJuanMuLuPrint(self,printList = [('test','test','test','test','test','
     new_table.Cell(1,6).Range.Text = u"保管期限"
     new_table.Cell(1,7).Range.Text = u"文件类别"
     new_table.Cell(1,8).Range.Text = u"备注"
+    new_table.Rows(1).Borders(constants.wdBorderBottom).LineStyle = 1
+    new_table.Rows(1).Borders(constants.wdBorderTop).LineStyle = 1
+    new_table.Rows(1).Borders(constants.wdBorderLeft).LineStyle = 1
+    new_table.Rows(1).Borders(constants.wdBorderRight).LineStyle = 1
     hang = len(printList)
     i = 2
     j = 1
@@ -59,8 +65,21 @@ def doGuiAnJuanMuLuPrint(self,printList = [('test','test','test','test','test','
             new_table.Cell(i,6).Range.Text = row[10]
             new_table.Cell(i,7).Range.Text = row[11]
             new_table.Cell(i,8).Range.Text = row[12]
+            new_table.Rows(i).Borders(constants.wdBorderBottom).LineStyle = 1
+            new_table.Rows(i).Borders(constants.wdBorderTop).LineStyle = 1
+            new_table.Rows(i).Borders(constants.wdBorderLeft).LineStyle = 1
+            new_table.Rows(i).Borders(constants.wdBorderRight).LineStyle = 1            
             i = i + 1
             j = j + 1
+    for i in range(1,8):
+        new_table.Columns(i).Borders(constants.wdBorderTop).LineStyle = 1
+        new_table.Columns(i).Borders(constants.wdBorderTop).LineStyle = 1
+        new_table.Columns(i).Borders(constants.wdBorderLeft).LineStyle = 1
+        new_table.Columns(i).Borders(constants.wdBorderRight).LineStyle = 1         
+    #删除第一页空白
+    pre_section = doc.Sections(1)
+    doc.Range(pre_section.Range.Start, pre_section.Range.End-1).Delete(1)    
+    
     if guiOrHe == u'gui' :
         path = os.getcwd()+"\\打印\\柜案卷目录"+datetime.datetime.now().strftime('%Y%m%d%H%M%S')+".doc"
     else :
@@ -71,15 +90,15 @@ def doJuanMuLuPrint(self,printList = [('test','test','test','test','test','test'
     DIQU,DANWEI = DD()
     msword = DispatchEx(r'Word.Application')
     msword.Visible = CESHI
-    msword.DisplayAlerts = CESHI 
+    #msword.DisplayAlerts = CESHI 
     doc = msword.Documents.Add()   
     pre_section = doc.Sections(1)
-    new_seciton = doc.Range(pre_section.Range.End, pre_section.Range.End).Sections.Add()
+    new_seciton = doc.Range(pre_section.Range.End-1, pre_section.Range.End-1).Sections.Add()
     new_range = new_seciton.Range
-    new_range.Text = unicode(DANWEI)+u"天保工程档案(卷内)目录"
+    new_range.Text = unicode(DANWEI[3:])+u"天保工程档案(卷内)目录"
     new_range.Font.Size = 15
     new_range.ParagraphFormat.Alignment = 1
-    new_table = new_range.Tables.Add(doc.Range(new_range.End,new_range.End), len(printList)+1, 11)
+    new_table = new_range.Tables.Add(doc.Range(new_range.End-1,new_range.End-1), len(printList)+1, 11)
     new_table.Cell(1,1).Range.Text = u"序号"
     new_table.Cell(1,2).Range.Text = u"区号+柜号"
     new_table.Cell(1,3).Range.Text = u"盒号"
@@ -91,6 +110,10 @@ def doJuanMuLuPrint(self,printList = [('test','test','test','test','test','test'
     new_table.Cell(1,9).Range.Text = u"页数"
     new_table.Cell(1,10).Range.Text = u"互见号"
     new_table.Cell(1,11).Range.Text = u"备注"
+    new_table.Rows(1).Borders(constants.wdBorderBottom).LineStyle = 1
+    new_table.Rows(1).Borders(constants.wdBorderTop).LineStyle = 1
+    new_table.Rows(1).Borders(constants.wdBorderLeft).LineStyle = 1
+    new_table.Rows(1).Borders(constants.wdBorderRight).LineStyle = 1    
     hang = len(printList)
     i = 2
     j = 1
@@ -107,8 +130,20 @@ def doJuanMuLuPrint(self,printList = [('test','test','test','test','test','test'
             new_table.Cell(i,9).Range.Text = row[8]
             new_table.Cell(i,10).Range.Text = row[9]
             new_table.Cell(i,11).Range.Text = row[10]
+            new_table.Rows(i).Borders(constants.wdBorderBottom).LineStyle = 1
+            new_table.Rows(i).Borders(constants.wdBorderTop).LineStyle = 1
+            new_table.Rows(i).Borders(constants.wdBorderLeft).LineStyle = 1
+            new_table.Rows(i).Borders(constants.wdBorderRight).LineStyle = 1             
             i = i + 1
             j = j + 1
+    for i in range(1,11):
+        new_table.Columns(i).Borders(constants.wdBorderTop).LineStyle = 1
+        new_table.Columns(i).Borders(constants.wdBorderTop).LineStyle = 1
+        new_table.Columns(i).Borders(constants.wdBorderLeft).LineStyle = 1
+        new_table.Columns(i).Borders(constants.wdBorderRight).LineStyle = 1         
+    #删除第一页空白
+    pre_section = doc.Sections(1)
+    doc.Range(pre_section.Range.Start, pre_section.Range.End-1).Delete(1)      
     path = os.getcwd()+"\\打印\\卷目录"+datetime.datetime.now().strftime('%Y%m%d%H%M%S')+".doc"
     saveAndOpen(msword, doc , path)
 
@@ -118,15 +153,30 @@ def doAnJuanBiaoTiPrint(self,printList=[(u'test',u'test',u'test',u'test',u'test'
     msword = win32com.client.gencache.EnsureDispatch("Word.Application")
     #msword = DispatchEx(r'Word.Application')
     msword.Visible = CESHI
-    msword.DisplayAlerts = CESHI
+    #msword.DisplayAlerts = CESHI
     doc = msword.Documents.Add()
     for section_index in range(1,len(printList)+1) :
         pre_section = doc.Sections(section_index)
-        new_seciton = doc.Range(pre_section.Range.End, pre_section.Range.End).Sections.Add()
+        new_seciton = doc.Range(pre_section.Range.End-1, pre_section.Range.End-1).Sections.Add()
         new_range = new_seciton.Range
-        new_table = new_range.Tables.Add(doc.Range(new_range.End,new_range.End), 4, 1)
+        new_table = new_range.Tables.Add(doc.Range(new_range.End-1,new_range.End-1), 4, 1)
+        for i in range(1,5):
+            new_table.Rows(i).Borders(constants.wdBorderBottom).LineStyle = 1
+            new_table.Rows(i).Borders(constants.wdBorderTop).LineStyle = 1
+            new_table.Rows(i).Borders(constants.wdBorderLeft).LineStyle = 1
+            new_table.Rows(i).Borders(constants.wdBorderRight).LineStyle = 1            
         new_table.Cell(2,1).Range.InsertAfter(new_table.Cell(2,1).Range.Tables.Add(new_table.Cell(2,1).Range,3,2))
         sub_table_top = new_table.Cell(2,1).Range.Tables.Add(new_table.Cell(2,1).Range,3,2)
+        for i in range(1,4):
+            sub_table_top.Rows(i).Borders(constants.wdBorderBottom).LineStyle = 1
+            sub_table_top.Rows(i).Borders(constants.wdBorderTop).LineStyle = 1
+            sub_table_top.Rows(i).Borders(constants.wdBorderLeft).LineStyle = 1
+            sub_table_top.Rows(i).Borders(constants.wdBorderRight).LineStyle = 1 
+        for i in range(1,3):
+            sub_table_top.Columns(i).Borders(constants.wdBorderTop).LineStyle = 1
+            sub_table_top.Columns(i).Borders(constants.wdBorderTop).LineStyle = 1
+            sub_table_top.Columns(i).Borders(constants.wdBorderLeft).LineStyle = 1
+            sub_table_top.Columns(i).Borders(constants.wdBorderRight).LineStyle = 1            
         sub_table_top.Cell(1,1).Range.Text = u"全宗号："
         sub_table_top.Cell(2,1).Range.Text = u"档  号："
         sub_table_top.Cell(3,1).Range.Text = u"索引号："
@@ -137,7 +187,19 @@ def doAnJuanBiaoTiPrint(self,printList=[(u'test',u'test',u'test',u'test',u'test'
         sub_table_top.Columns(1).SetWidth(2.5*28.35,0)
         sub_table_top.Columns(2).SetWidth(4*28.35,0)
         sub_table_top.Rows.Alignment = 0
-        sub_table_bottom = new_table.Cell(4,1).Range.Tables.Add(new_table.Cell(4,1).Range,4,2)
+        sub_table_bottom = new_table.Cell(4,1).Range.Tables.Add(new_table.Cell(4,1).Range,1,2)
+        for i in range(1,4):
+            sub_table_bottom.Rows.Add()
+        for i in range(1,5):
+            sub_table_bottom.Rows(i).Borders(constants.wdBorderBottom).LineStyle = 1
+            sub_table_bottom.Rows(i).Borders(constants.wdBorderTop).LineStyle = 1
+            sub_table_bottom.Rows(i).Borders(constants.wdBorderLeft).LineStyle = 1
+            sub_table_bottom.Rows(i).Borders(constants.wdBorderRight).LineStyle = 1 
+        for i in range(1,3):
+            sub_table_bottom.Columns(i).Borders(constants.wdBorderTop).LineStyle = 1
+            sub_table_bottom.Columns(i).Borders(constants.wdBorderTop).LineStyle = 1
+            sub_table_bottom.Columns(i).Borders(constants.wdBorderLeft).LineStyle = 1
+            sub_table_bottom.Columns(i).Borders(constants.wdBorderRight).LineStyle = 1 
         sub_table_bottom.Cell(1,1).Range.Text = u"立卷单位:"
         sub_table_bottom.Cell(2,1).Range.Text = u"起止日期:"
         sub_table_bottom.Cell(3,1).Range.Text = u"保管期限:"
@@ -165,13 +227,13 @@ def doAnJuanBiaoTiPrint(self,printList=[(u'test',u'test',u'test',u'test',u'test'
         new_table.Rows(1).Height = 3
         new_table.Rows(2).Height = 120
         new_table.Rows(2).Borders(constants.wdBorderBottom).LineStyle =0
-        new_table.Rows(3).Height = 350
+        new_table.Rows(3).Height = 330
         new_table.Rows(3).Borders(constants.wdBorderBottom).LineStyle =0
-        new_table.Rows(4).Height = 180
+        new_table.Rows(4).Height = 200
         #字号调整sub_table_top.Cell(1,2).Range.Font.Size = 5
     #删除第一页空白
     pre_section = doc.Sections(1)
-    doc.Range(pre_section.Range, pre_section.Range.End).Delete(1)
+    doc.Range(pre_section.Range.Start, pre_section.Range.End-1).Delete(1)
     #字体变小
     doc.Range(0,0).Select()
     while msword.Selection.Find.Execute(DW, False, False, True, False, False, True, 0, True, "", 0):
@@ -186,15 +248,30 @@ def doCaiWuPrint(self,printList=[(u'test',u'test',u'test',u'test',u'test',u'test
     DW = u''
     msword = DispatchEx(r'Word.Application')
     msword.Visible = CESHI
-    msword.DisplayAlerts = CESHI
+    #msword.DisplayAlerts = CESHI
     doc = msword.Documents.Add()
     for section_index in range(1,len(printList)+1) :
         pre_section = doc.Sections(section_index)
-        new_seciton = doc.Range(pre_section.Range.End, pre_section.Range.End).Sections.Add()
+        new_seciton = doc.Range(pre_section.Range.End-1, pre_section.Range.End-1).Sections.Add()
         new_range = new_seciton.Range
-        new_table = new_range.Tables.Add(doc.Range(new_range.End,new_range.End), 4, 1)
+        new_table = new_range.Tables.Add(doc.Range(new_range.End-1,new_range.End-1), 4, 1)
+        for i in range(1,5):
+            new_table.Rows(i).Borders(constants.wdBorderBottom).LineStyle = 1
+            new_table.Rows(i).Borders(constants.wdBorderTop).LineStyle = 1
+            new_table.Rows(i).Borders(constants.wdBorderLeft).LineStyle = 1
+            new_table.Rows(i).Borders(constants.wdBorderRight).LineStyle = 1           
         new_table.Cell(2,1).Range.InsertAfter(new_table.Cell(2,1).Range.Tables.Add(new_table.Cell(2,1).Range,3,2))
         sub_table_top = new_table.Cell(2,1).Range.Tables.Add(new_table.Cell(2,1).Range,3,2)
+        for i in range(1,4):
+            sub_table_top.Rows(i).Borders(constants.wdBorderBottom).LineStyle = 1
+            sub_table_top.Rows(i).Borders(constants.wdBorderTop).LineStyle = 1
+            sub_table_top.Rows(i).Borders(constants.wdBorderLeft).LineStyle = 1
+            sub_table_top.Rows(i).Borders(constants.wdBorderRight).LineStyle = 1 
+        for i in range(1,3):
+            sub_table_top.Columns(i).Borders(constants.wdBorderTop).LineStyle = 1
+            sub_table_top.Columns(i).Borders(constants.wdBorderTop).LineStyle = 1
+            sub_table_top.Columns(i).Borders(constants.wdBorderLeft).LineStyle = 1
+            sub_table_top.Columns(i).Borders(constants.wdBorderRight).LineStyle = 1                 
         sub_table_top.Cell(1,1).Range.Text = u"全宗号："
         sub_table_top.Cell(2,1).Range.Text = u"档  号："
         sub_table_top.Cell(3,1).Range.Text = u"索引号："
@@ -205,7 +282,19 @@ def doCaiWuPrint(self,printList=[(u'test',u'test',u'test',u'test',u'test',u'test
         sub_table_top.Columns(1).SetWidth(2.5*28.35,0)
         sub_table_top.Columns(2).SetWidth(4*28.35,0)
         sub_table_top.Rows.Alignment = 0
-        sub_table_bottom = new_table.Cell(4,1).Range.Tables.Add(new_table.Cell(4,1).Range,4,2)
+        sub_table_bottom = new_table.Cell(4,1).Range.Tables.Add(new_table.Cell(4,1).Range,1,2)
+        for i in range(1,4):
+            sub_table_bottom.Rows.Add()
+        for i in range(1,5):
+            sub_table_bottom.Rows(i).Borders(constants.wdBorderBottom).LineStyle = 1
+            sub_table_bottom.Rows(i).Borders(constants.wdBorderTop).LineStyle = 1
+            sub_table_bottom.Rows(i).Borders(constants.wdBorderLeft).LineStyle = 1
+            sub_table_bottom.Rows(i).Borders(constants.wdBorderRight).LineStyle = 1 
+        for i in range(1,3):
+            sub_table_bottom.Columns(i).Borders(constants.wdBorderTop).LineStyle = 1
+            sub_table_bottom.Columns(i).Borders(constants.wdBorderTop).LineStyle = 1
+            sub_table_bottom.Columns(i).Borders(constants.wdBorderLeft).LineStyle = 1
+            sub_table_bottom.Columns(i).Borders(constants.wdBorderRight).LineStyle = 1         
         sub_table_bottom.Cell(1,1).Range.Text = u"立卷单位:"
         sub_table_bottom.Cell(2,1).Range.Text = u"起止日期:"
         sub_table_bottom.Cell(3,1).Range.Text = u"保管期限:"
@@ -239,7 +328,7 @@ def doCaiWuPrint(self,printList=[(u'test',u'test',u'test',u'test',u'test',u'test
         #字号调整sub_table_top.Cell(1,2).Range.Font.Size = 5
     #删除第一页空白
     pre_section = doc.Sections(1)
-    doc.Range(pre_section.Range, pre_section.Range.End).Delete(1)
+    doc.Range(pre_section.Range.Start, pre_section.Range.End-1).Delete(1)
     #字体变小
     doc.Range(0,0).Select()
     while msword.Selection.Find.Execute(DW, False, False, True, False, False, True, 0, True, "", 0):
@@ -252,24 +341,31 @@ def doBeiKaoBiaoPrint(self,printList=[('test','test','test','test','test','test'
     DIQU,DANWEI = DD()
     msword = DispatchEx(r'Word.Application')
     msword.Visible = CESHI
-    msword.DisplayAlerts = CESHI
+    #msword.DisplayAlerts = CESHI
     doc = msword.Documents.Add()
     pre_section = doc.Sections(1)
-    new_seciton = doc.Range(pre_section.Range.End, pre_section.Range.End).Sections.Add()
+    new_seciton = doc.Range(pre_section.Range.End-1, pre_section.Range.End-1).Sections.Add()
     new_range = new_seciton.Range
-    new_range.Text = u"卷内备考\n"
+    new_range.Text = u"                       卷内备考\n"
     new_range.Font.Size = 15
-    new_range.ParagraphFormat.Alignment = 1
-    new_table = new_range.Tables.Add(doc.Range(new_range.End,new_range.End), 1, 1)
-    new_table.Rows(1).Height = 650
+    new_range.ParagraphFormat.Alignment = 0
+    new_table = new_range.Tables.Add(doc.Range(new_range.End-1,new_range.End-1), 1, 1)
+    new_table.Rows(1).Borders(constants.wdBorderBottom).LineStyle = 1
+    new_table.Rows(1).Borders(constants.wdBorderTop).LineStyle = 1
+    new_table.Rows(1).Borders(constants.wdBorderLeft).LineStyle = 1
+    new_table.Rows(1).Borders(constants.wdBorderRight).LineStyle = 1
+    new_table.Rows(1).Height = 640
     new_table.Cell(1,1).Range.Font.Size = 12
     new_table.Cell(1,1).Range.Text = u"档号:" + printList[0][0]+printList[0][1]+printList[0][2]+printList[0][3] +u"\n\n\n" +u"互见号:" + printList[0][4] + u"\n\n\n" + \
                                      u"说明:" + u"\n\n\n" +u"    卷内共有\n"+u"            文字材料 " + unicode(printList[0][5]) + u" 件，" + \
                                      u"共 "+ unicode(int(printList[0][6])) + u" 页\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n" + \
                                      u"                                            立卷人:" + printList[0][7] + u"\n\n" + \
                                      u"                                            立卷日期:" + printList[0][8] + u"\n\n" + \
-                                     u"                                            检查人:\n\n\n"+\
+                                     u"                                            检查人:\n\n\n"+ \
                                      u"                                                    年    月    日"
+    #删除第一页空白
+    pre_section = doc.Sections(1)
+    doc.Range(pre_section.Range.Start, pre_section.Range.End-1).Delete(1)    
     path = os.getcwd()+"\\打印\\卷内备考表"+datetime.datetime.now().strftime('%Y%m%d%H%M%S')+".doc"
     saveAndOpen(msword,doc,path)
     

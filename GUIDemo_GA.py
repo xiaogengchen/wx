@@ -1,7 +1,6 @@
 # -*- coding:utf-8 -*-
 
 import os
-import pickle
 import shutil
 import wx
 import wx.combo
@@ -18,7 +17,7 @@ import ShowFiles
 from win32com.shell import shell, shellcon
 
 
-CONNECTION = DoCURD.connect_db('./tbdata.db')    
+CONNECTION = DoCURD.connect_db('./tbdata.db') 
 class MyFrame(wx.Frame):
     #框架界面初始化,用户各元素外观布局^(wx.MAXIMIZE_BOX|wx.RESIZE_BORDER)
     def __init__(self):
@@ -1266,6 +1265,7 @@ class MyFrame(wx.Frame):
     def shangbao(self,event):
         ilist = shell.SHGetSpecialFolderLocation(0, shellcon.CSIDL_DESKTOP)
         deskpath = shell.SHGetPathFromIDList(ilist) 
+        #deskpath = os.getcwd()
         dw = u''
         if os.path.exists(u'./re.py') :
             with open(u'./re.py') as r :
@@ -1302,6 +1302,7 @@ class MyFrame(wx.Frame):
             wx.MessageBox(u"用户 "+self.beforPassComb_reset.GetValue()+" 密码重置成功！",u'提示')
         pass
     def printByGuiHao(self,event):
+        event.GetEventObject().Enabled = False        
         quhao = self.quhao_print_comboBox.GetValue().strip()
         guihao = self.guihao_print_comboBox.GetValue().strip()
         paramDict = {}
@@ -1314,9 +1315,12 @@ class MyFrame(wx.Frame):
             return
         #需要打印的列表
         printList = []
-        printList = DoCURD.query_for_guihao_print(self.CONN, paramDict=paramDict)     
+        printList = DoCURD.query_for_guihao_print(self.CONN, paramDict=paramDict) 
         outputPrint.doGuiAnJuanMuLuPrint('',printList=printList,guiOrHe=u"gui")
+        event.GetEventObject().Enabled = True
+
     def printByHeHao(self,event):
+        event.GetEventObject().Enabled = False
         quhao = self.quhao_print_comboBox_for_he.GetValue().strip()
         guihao = self.guihao_print_comboBox_for_he.GetValue().strip()
         hehao = self.hehao_print_comboBox_for_he.GetValue().strip()
@@ -1333,8 +1337,10 @@ class MyFrame(wx.Frame):
         printList = []
         printList = DoCURD.query_for_hehao_print(self.CONN, paramDict=paramDict)     
         outputPrint.doGuiAnJuanMuLuPrint('',printList=printList,guiOrHe=u"he") 
+        event.GetEventObject().Enabled = True
         
     def printByJuanHao(self,event):
+        event.GetEventObject().Enabled = False
         quhao = self.quhao_print_comboBox_for_juan.GetValue().strip()
         guihao = self.guihao_print_comboBox_for_juan.GetValue().strip()
         hehao = self.hehao_print_comboBox_for_juan.GetValue().strip()
@@ -1352,8 +1358,11 @@ class MyFrame(wx.Frame):
         #需要打印的列表
         printList = []
         printList = DoCURD.query_files_for_juan_print(self.CONN, paramDict=paramDict)     
-        outputPrint.doJuanMuLuPrint('',printList=printList)         
+        outputPrint.doJuanMuLuPrint('',printList=printList) 
+        event.GetEventObject().Enabled = True
+        
     def printBeikao(self,event):
+        event.GetEventObject().Enabled = False
         quhao = self.quhao_print_comboBox_for_beikao.GetValue().strip()
         guihao = self.guihao_print_comboBox_for_beikao.GetValue().strip()
         hehao = self.hehao_print_comboBox_for_beikao.GetValue().strip()
@@ -1373,8 +1382,10 @@ class MyFrame(wx.Frame):
         
         printList = DoCURD.query_beikaobiao_for_print(self.CONN, paramDict=paramDict)  
         outputPrint.doBeiKaoBiaoPrint('',printList=printList)        
-        pass
+        event.GetEventObject().Enabled = True
+        
     def printByAnJuanBiaoTi(self,event):
+        event.GetEventObject().Enabled = False
         quhao = self.quhao_print_comboBox_for_anjuanbiaoti.GetValue().strip()
         guihao = self.guihao_print_comboBox_for_anjuanbiaoti.GetValue().strip()
         hehao = self.hehao_print_comboBox_for_anjuanbiaoti.GetValue().strip()
@@ -1391,8 +1402,10 @@ class MyFrame(wx.Frame):
         printList = []
         printList = DoCURD.query_anjuanbiaoti_print(self.CONN, paramDict=paramDict)     
         outputPrint.doAnJuanBiaoTiPrint('',printList=printList)        
+        event.GetEventObject().Enabled = True
     
     def printCaiWu(self,event):
+        event.GetEventObject().Enabled = False
         quhao = self.quhao_print_comboBox_for_caiwu.GetValue().strip()
         guihao = self.guihao_print_comboBox_for_caiwu.GetValue().strip()
         hehao = self.hehao_print_comboBox_for_caiwu.GetValue().strip()
@@ -1409,7 +1422,8 @@ class MyFrame(wx.Frame):
         printList = []
         #财务数据同案卷标题数据
         printList = DoCURD.query_anjuanbiaoti_print(self.CONN, paramDict=paramDict)     
-        outputPrint.doCaiWuPrint('',printList=printList)       
+        outputPrint.doCaiWuPrint('',printList=printList) 
+        event.GetEventObject().Enabled = True
     
     def addUser(self,event):
         #用户名、密码若为空，提示、返回
@@ -2603,7 +2617,6 @@ class myFileTable(wx.grid.PyGridTableBase):
         gridView.EndBatch()
         getValueMsg = wx.grid.GridTableMessage(self,wx.grid.GRIDTABLE_REQUEST_VIEW_GET_VALUES)
         gridView.ProcessTableMessage(getValueMsg)
-           
         return True   
     
 def initTables(self):
@@ -2621,6 +2634,7 @@ def initTables(self):
     userCountList = DoCURD.query_user_count(CONNECTION)
     if len(userCountList)==0:
         DoCURD.add_user(CONNECTION,paramDict={"username":'admin',"password":'123'})
+    
 
 class MyApp(wx.App):
     def __init__(self):
@@ -2643,18 +2657,15 @@ class MyApp(wx.App):
             if sc != sc_param:
                 #序列号验证
                 Regist.RegistPanel(self.frame)
-        
-        if os.path.exists(u'./re.py') :
             with open(u'./re.py') as r :
                 r.readline().strip()
                 r.readline().strip()
                 r.readline().strip()
                 self.dw_value = r.readline().strip()
-                n = UtilData.DANWEI_List.index(self.dw_value)
-                self.frame.danwei_archives_comboBox.SetSelection(n)
-        else:
-            #设置第0个选项为默认值
-            self.danwei_archives_comboBox.SetSelection(n=0)        
+                if self.dw_value in UtilData.DANWEI_List :
+                    n = UtilData.DANWEI_List.index(self.dw_value)
+                    self.frame.danwei_archives_comboBox.SetSelection(n)   
+                    
         #未登录则冻结所有页面
         for i in range(1,int(self.frame.main_Notebook.GetPageCount())):
             self.frame.main_Notebook.GetPage(i).Freeze()   
