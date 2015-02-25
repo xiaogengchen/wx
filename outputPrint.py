@@ -9,7 +9,7 @@ import re
 from win32com.client import DispatchEx,constants
 
 
-CESHI = 1 #(测试为1,正常为0)
+CESHI = 0 #(测试为1,正常为0)
 
 def DD():
     DIQU = u''

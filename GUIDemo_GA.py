@@ -1311,7 +1311,8 @@ class MyFrame(wx.Frame):
         if quhao==u'' or guihao==u'' :
             errorMessage = wx.MessageDialog(parent=None,message=u"请选择区号和柜号后再打印!",caption=u"打印操作异常信息",style=wx.ICON_ERROR)
             result = errorMessage.ShowModal()
-            errorMessage.Destroy() 
+            errorMessage.Destroy()
+            event.GetEventObject().Enabled = True
             return
         #需要打印的列表
         printList = []
@@ -1331,7 +1332,8 @@ class MyFrame(wx.Frame):
         if quhao==u'' or guihao==u'' or hehao==u'' :
             errorMessage = wx.MessageDialog(parent=None,message=u"请选择区号、柜号、盒号后再打印!",caption=u"打印操作异常信息",style=wx.ICON_ERROR)
             result = errorMessage.ShowModal()
-            errorMessage.Destroy() 
+            errorMessage.Destroy()
+            event.GetEventObject().Enabled = True
             return
         #需要打印的列表
         printList = []
@@ -1353,7 +1355,8 @@ class MyFrame(wx.Frame):
         if quhao==u'' or guihao==u'' or hehao==u'' or juanhao == u'' :
             errorMessage = wx.MessageDialog(parent=None,message=u"请选择区号、柜号、盒号、卷号后再打印!",caption=u"打印操作异常信息",style=wx.ICON_ERROR)
             result = errorMessage.ShowModal()
-            errorMessage.Destroy() 
+            errorMessage.Destroy()
+            event.GetEventObject().Enabled = True
             return
         #需要打印的列表
         printList = []
@@ -1375,7 +1378,8 @@ class MyFrame(wx.Frame):
         if quhao==u'' or guihao==u'' or hehao==u'' or juanhao == u'' :
             errorMessage = wx.MessageDialog(parent=None,message=u"请选择区号、柜号、盒号、卷号后再打印!",caption=u"打印操作异常信息",style=wx.ICON_ERROR)
             result = errorMessage.ShowModal()
-            errorMessage.Destroy() 
+            errorMessage.Destroy()
+            event.GetEventObject().Enabled = True
             return
         #需要打印的列表
         printList = []
@@ -1397,6 +1401,7 @@ class MyFrame(wx.Frame):
             errorMessage = wx.MessageDialog(parent=None,message=u"请选择区号、柜号、盒号后再打印!",caption=u"打印操作异常信息",style=wx.ICON_ERROR)
             result = errorMessage.ShowModal()
             errorMessage.Destroy() 
+            event.GetEventObject().Enabled = True
             return
         #需要打印的列表
         printList = []
@@ -1416,7 +1421,8 @@ class MyFrame(wx.Frame):
         if quhao==u'' or guihao==u'' or hehao==u'' :
             errorMessage = wx.MessageDialog(parent=None,message=u"请选择区号、柜号、盒号后再打印!",caption=u"打印操作异常信息",style=wx.ICON_ERROR)
             result = errorMessage.ShowModal()
-            errorMessage.Destroy() 
+            errorMessage.Destroy()
+            event.GetEventObject().Enabled = True
             return
         #需要打印的列表
         printList = []
